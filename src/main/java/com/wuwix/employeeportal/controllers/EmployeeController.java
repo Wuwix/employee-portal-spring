@@ -4,11 +4,12 @@ import com.wuwix.employeeportal.dao.EmployeeDao;
 import com.wuwix.employeeportal.dao.EmployeeRelationManyService;
 import com.wuwix.employeeportal.dao.EmployeeRelationService;
 import com.wuwix.employeeportal.domain.*;
+import com.wuwix.employeeportal.services.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +29,15 @@ public class EmployeeController {
         employee.setStreet("Kilińskiego");
         employee.setStreetNumber(42);
 
-        employeeDao.persist(employee);
+        employeeService.saveEmployee(employee);
         return employee;
+    }
+
+    @PostMapping(value = "/save")
+    public ResponseEntity<Employee> saveEmployee(@RequestBody Employee employee) {
+
+        employeeService.saveEmployee(employee);
+        return new ResponseEntity<>(employee, HttpStatus.OK);
     }
 
     @GetMapping("/relation/save")
@@ -68,9 +76,14 @@ public class EmployeeController {
         return employee;
     }
 
+//    @CrossOrigin(origins = { "http://localhost:8080", "http://localhost:4201" }, maxAge = 6000)
+    @GetMapping("/getbyname/{firstName}")
+    public List<Employee> getEmployeesByFirstName(@PathVariable String firstName) {
+        return employeeService.getFirstNameLike(firstName);
+    }
     @GetMapping("/getall")
     public List<Employee> getUsersController() {
-        return employeeDao.getAll();
+        return employeeService.getAll();
     }
 
     @GetMapping("relation/getall")
@@ -99,7 +112,8 @@ public class EmployeeController {
     }
 
     @Autowired
-    private EmployeeDao employeeDao;
+    @Qualifier("employeeServiceSpringImpl")
+    private EmployeeService employeeService;
 
     @Autowired
     private EmployeeRelationService employeeRelationService;

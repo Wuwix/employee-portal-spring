@@ -4,7 +4,11 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "pracownicy")
-@SecondaryTable(name = "adresy", pkJoinColumns = @PrimaryKeyJoinColumn(name = "employee_id"))
+
+@SecondaryTables({
+        @SecondaryTable(name = "adresy", pkJoinColumns = @PrimaryKeyJoinColumn(name = "employee_id")),
+        @SecondaryTable(name = "zdjecia", pkJoinColumns = @PrimaryKeyJoinColumn(name = "employee_id"))
+})
 public class Employee {
 
     @Id
@@ -15,7 +19,10 @@ public class Employee {
     private String lastName;
     private double salary;
 
-    @Column(table = "adresy")
+    @Column(table = "zdjecia")
+    private String imgUrl;
+
+    @Column(table = "adresy", nullable = false, columnDefinition = "string default ''")
     private String locality;
 
     @Column(table = "adresy")
@@ -25,7 +32,7 @@ public class Employee {
     private String street;
 
     @Column(table = "adresy")
-    private int streetNumber;
+    private int streetNumber = 0;
 
     public long getId() {
         return id;
@@ -89,6 +96,14 @@ public class Employee {
 
     public void setStreetNumber(int streetNumber) {
         this.streetNumber = streetNumber;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 }
 
